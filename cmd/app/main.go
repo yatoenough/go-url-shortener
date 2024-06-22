@@ -26,7 +26,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	_ = db
+	_, err = db.SaveURL("https://google.com", "google")
+	if err != nil {
+		log.Error("db test", errAttr(err))
+		os.Exit(1)
+	}
+
 }
 
 func initLogger(env string) *slog.Logger {

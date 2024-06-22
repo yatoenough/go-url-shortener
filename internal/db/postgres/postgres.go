@@ -18,7 +18,7 @@ func New(connStr string) (*Storage, error) {
 
 	stmt, err := db.Prepare(`
 		CREATE TABLE IF NOT EXISTS urls(
-			id INTEGER PRIMARY KEY,
+			id SERIAL PRIMARY KEY,
 			alias TEXT NOT NULL UNIQUE,
 			url TEXT NOT NULL
 		);
@@ -33,4 +33,14 @@ func New(connStr string) (*Storage, error) {
 	}
 
 	return &Storage{db: db}, nil
+}
+
+func (s *Storage) SaveURL(urlToSave, alias string) (int64, error) {
+	var id int64
+	err := s.db.QueryRow("INSERT INTO urls(url, alias) VALUES($1, $2) RETURNING id", urlToSave, alias).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }
