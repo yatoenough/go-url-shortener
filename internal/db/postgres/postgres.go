@@ -2,8 +2,10 @@ package postgres
 
 import (
 	"database/sql"
+	"errors"
 
 	_ "github.com/lib/pq"
+	"github.com/yatoenough/go-url-shortener/internal/db"
 )
 
 type Storage struct {
@@ -15,6 +17,7 @@ func New(connStr string) (*Storage, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer db.Close()
 
 	stmt, err := db.Prepare(`
 		CREATE TABLE IF NOT EXISTS urls(
@@ -43,4 +46,27 @@ func (s *Storage) SaveURL(urlToSave, alias string) (int64, error) {
 	}
 
 	return id, nil
+}
+
+func (s *Storage) GetURL(alias string) (string, error) {
+	var resURL string
+	err := s.db.QueryRow("SELECT url FROM urls WHERE alias=$1", alias).Scan(&resURL)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", db.ErrURLNotFound
+		}
+
+		return "", err
+	}
+
+	return resURL, nil
+}
+
+func (s *Storage) RemoveURL(id int64) error {
+	_, err := s.db.Exec("DELETE FROM urls WHERE id=$1", id)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

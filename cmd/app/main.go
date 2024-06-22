@@ -1,57 +1,30 @@
 package main
 
 import (
-	"log/slog"
 	"os"
 
 	"github.com/yatoenough/go-url-shortener/internal/config"
 	"github.com/yatoenough/go-url-shortener/internal/db/postgres"
-)
-
-const (
-	envLocal = "local"
-	envDev   = "development"
-	envProd  = "production"
+	"github.com/yatoenough/go-url-shortener/internal/lib/logger"
+	"github.com/yatoenough/go-url-shortener/internal/lib/logger/attrs"
+	"github.com/yatoenough/go-url-shortener/internal/server"
 )
 
 func main() {
 	cfg := config.MustLoad()
 
-	log := initLogger(cfg.Env)
+	log := logger.New(cfg.Env)
 	log.Info("Starting application...")
 
-	db, err := postgres.New(cfg.ConnectionString)
+	_, err := postgres.New(cfg.ConnectionString)
 	if err != nil {
-		log.Error("Failed to init db connection", errAttr(err))
+		log.Error("Failed to init db connection", attrs.ErrAttr(err))
 		os.Exit(1)
 	}
 
-	_, err = db.SaveURL("https://google.com", "google")
-	if err != nil {
-		log.Error("db test", errAttr(err))
-		os.Exit(1)
-	}
+	srv := server.New(cfg)
 
-}
-
-func initLogger(env string) *slog.Logger {
-	var logger *slog.Logger
-
-	switch env {
-	case envLocal:
-		logger = slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
-	case envDev:
-		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
-	case envProd:
-		logger = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
-	}
-
-	return logger
-}
-
-func errAttr(err error) slog.Attr {
-	return slog.Attr{
-		Key:   "error",
-		Value: slog.StringValue(err.Error()),
+	if err := srv.ListenAndServe(); err != nil {
+		log.Error("failed to start server", attrs.ErrAttr(err))
 	}
 }
