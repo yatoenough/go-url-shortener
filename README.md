@@ -31,6 +31,10 @@ or
 $ make run
 ```
 
+<h1>UI</h1>
+
+- Coming soon!
+
 <h1>API Endpoints: </h1>
 
 - <b>Shorten a URL:</b>
@@ -46,8 +50,25 @@ $ make run
   ```
 
   - <b>Response</b>:
-    - <b>On success</b>: JSON object containing the alias of url
-    - <b>On failure</b>: Error message
+    - <b>On success</b>:
+
+  ```json
+  {
+    "statusCode": 200,
+    "timestamp": "2024-06-22T21:44:15.7986413+02:00 yyyy-MM-dd T hh:mm:ss+<timezone>",
+    "alias": "<alias>"
+  }
+  ```
+
+  - <b>On failure</b>:
+
+  ```json
+  {
+    "statusCode": 400, //or another
+    "error": "<error message>",
+    "timestamp": "2024-06-22T21:44:15.7986413+02:00 yyyy-MM-dd T hh:mm:ss+<timezone>"
+  }
+  ```
 
 - <b>Redirect to original URL:</b>
 
