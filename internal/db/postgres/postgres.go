@@ -17,7 +17,6 @@ func New(connStr string) (*Storage, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer db.Close()
 
 	stmt, err := db.Prepare(`
 		CREATE TABLE IF NOT EXISTS urls(
@@ -69,4 +68,8 @@ func (s *Storage) RemoveURL(id int64) error {
 	}
 
 	return nil
+}
+
+func (s *Storage) Close() {
+	s.db.Close()
 }
