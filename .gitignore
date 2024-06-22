@@ -1,0 +1,5 @@
+/bin
+
+/config/*
+!/config/example.yaml
+.env
