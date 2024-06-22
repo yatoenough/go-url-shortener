@@ -4,6 +4,8 @@
 
 This demonstration project implements a URL shortener API built with Go 1.22 using Chi. It allows users to shorten long URLs and retrieve the original URL from the shortened version.
 
+</div>
+
 <h2>Features</h2>
 
 - Shorten URLs
