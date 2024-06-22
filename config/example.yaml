@@ -1,8 +1,8 @@
 # Env mode (local, production, development)
 env: local
 
-# Path to SQLite db
-db_path: './db/main.db'
+# Path to PostgreSQL db
+conn_str: 'postgres://postgres:password@localhost/dbname?sslmode=verify-full'
 
 # HTTP server config
 server_config:

@@ -11,7 +11,7 @@ import (
 
 type Config struct {
 	Env        string `yaml:"env" env:"ENV" env-default:"development"`
-	DbPath     string `yaml:"db_path" env-required:"true"`
+	ConnectionString     string `yaml:"conn_str" env-required:"true"`
 	HTTPServer `yaml:"server_config"`
 }
 

@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/yatoenough/go-url-shortener/internal/config"
+	"github.com/yatoenough/go-url-shortener/internal/db/postgres"
 )
 
 const (
@@ -18,6 +19,14 @@ func main() {
 
 	log := initLogger(cfg.Env)
 	log.Info("Starting application...")
+
+	db, err := postgres.New(cfg.ConnectionString)
+	if err != nil {
+		log.Error("Failed to init db connection", errAttr(err))
+		os.Exit(1)
+	}
+
+	_ = db
 }
 
 func initLogger(env string) *slog.Logger {
@@ -33,4 +42,11 @@ func initLogger(env string) *slog.Logger {
 	}
 
 	return logger
+}
+
+func errAttr(err error) slog.Attr {
+	return slog.Attr{
+		Key:   "error",
+		Value: slog.StringValue(err.Error()),
+	}
 }
